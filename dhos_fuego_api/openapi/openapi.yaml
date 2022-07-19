@@ -1,0 +1,304 @@
+openapi: 3.0.3
+info:
+  description: A service for making requests to a FHIR server
+  title: DHOS Fuego API
+  version: 1.0.0
+paths:
+  /running:
+    get:
+      summary: Verify service is running
+      description: Verifies that the service is running. Used for monitoring in kubernetes.
+      tags:
+      - monitoring
+      responses:
+        '200':
+          description: If we respond, we are running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  running:
+                    type: boolean
+                    example: true
+      operationId: flask_batteries_included.blueprint_monitoring.app_running
+  /version:
+    get:
+      summary: Get version information
+      description: Get the version number, circleci build number, and git hash.
+      tags:
+      - monitoring
+      responses:
+        '200':
+          description: Version numbers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  circle:
+                    type: string
+                    example: '1234'
+                  hash:
+                    type: string
+                    example: 366c204
+      operationId: flask_batteries_included.blueprint_monitoring.app_version
+  /dhos/v1/patient_search:
+    post:
+      summary: Search patients
+      description: Search a FHIR provider for patients with the provided identifiers
+      tags:
+      - patient
+      - search
+      requestBody:
+        description: Search patient request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientSearchRequest'
+              x-body-name: search_details
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PatientSearchResponse'
+        default:
+          description: Error, e.g. 400 Bad Request, 503 Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: dhos_fuego_api.blueprint_api.patient_search
+      security:
+      - bearerAuth: []
+    get:
+      summary: Get all patients from FHIR EPR database
+      description: Patient search without parameters. Returns all patients. Dev-only.
+      tags:
+      - dev
+      responses:
+        '200':
+          description: Patients list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PatientSearchResponse'
+        default:
+          description: Error, e.g. 400 Bad Request, 503 Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: dhos_fuego_api.blueprint_development.patient_search
+      security:
+      - bearerAuth: []
+  /drop_data:
+    post:
+      summary: Drop data
+      description: Drops dhos-fuego-api and FHIR EPR databases. Dev-only
+      tags:
+      - dev
+      responses:
+        '200':
+          description: Drop results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  complete:
+                    type: boolean
+                  time_taken:
+                    type: integer
+        default:
+          description: Error, e.g. 400 Bad Request, 503 Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: dhos_fuego_api.blueprint_development.drop_data_route
+      security:
+      - bearerAuth: []
+  /dhos/v1/patient_create:
+    post:
+      summary: Create patient
+      description: Creates patient in FHIR EPR system. Dev-only.
+      tags:
+      - dev
+      requestBody:
+        description: Patient details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientCreateRequest'
+              x-body-name: patient_details
+      responses:
+        '200':
+          description: Create results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PatientCreateResponse'
+        default:
+          description: Error, e.g. 400 Bad Request, 503 Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: dhos_fuego_api.blueprint_development.patient_create
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: HTTP response code
+          example: 404
+        message:
+          type: string
+          description: Message attached to response
+          example: Not Found
+      required:
+      - code
+      description: An error response in json format
+    PatientSearchRequest:
+      type: object
+      properties:
+        mrn:
+          type: string
+          description: MRN or hospital number
+          example: '123456'
+      required:
+      - mrn
+      description: Patient search request
+    PatientSearchResponse:
+      type: object
+      properties:
+        fhir_resource_id:
+          type: string
+          description: ID of the resource on the FHIR server
+          example: 5690f87c-c23a-4fa0-95a7-d803aff2b8e0
+        first_name:
+          type: string
+          description: First name
+          example: Elizabeth
+        last_name:
+          type: string
+          description: Last name
+          example: Windsor
+        date_of_birth:
+          type: string
+          format: date
+          description: Patient's date of birth
+          example: '1926-04-21'
+        mrn:
+          type: string
+          description: MRN or hospital number
+          example: '123456'
+      required:
+      - date_of_birth
+      - fhir_resource_id
+      - first_name
+      - last_name
+      - mrn
+      description: Patient search response
+    PatientCreateRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: First name
+          example: Elizabeth
+        last_name:
+          type: string
+          description: Last name
+          example: Windsor
+        date_of_birth:
+          type: string
+          format: date
+          description: Patient's date of birth
+          example: '1926-04-21'
+        mrn:
+          type: string
+          description: MRN or hospital number
+          example: '123456'
+      required:
+      - date_of_birth
+      - first_name
+      - last_name
+      - mrn
+      description: Patient create request
+    PatientCreateResponse:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: First name
+          example: Elizabeth
+        last_name:
+          type: string
+          description: Last name
+          example: Windsor
+        date_of_birth:
+          type: string
+          format: date
+          description: Patient's date of birth
+          example: '1926-04-21'
+        mrn:
+          type: string
+          description: MRN or hospital number
+          example: '123456'
+        fhir_resource_id:
+          type: string
+          description: ID of the resource on the FHIR server
+          example: 5690f87c-c23a-4fa0-95a7-d803aff2b8e0
+      required:
+      - date_of_birth
+      - fhir_resource_id
+      - first_name
+      - last_name
+      - mrn
+      description: Patient create response
+  responses:
+    BadRequest:
+      description: Bad or malformed request was received
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServiceUnavailable:
+      description: Service or dependent resource not available
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,12 @@
+behave
+black
+draymed==2.*
+environs
+faker==4.*
+isort
+mypy
+python-dateutil==2.*
+python-jose==3.*
+reportportal-behave-client==1.*
+requests==2.*
+typing_extensions==3.*
