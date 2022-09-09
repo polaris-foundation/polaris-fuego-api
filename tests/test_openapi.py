@@ -6,9 +6,16 @@ from flask import Flask
 from flask_batteries_included import init_metrics, init_monitoring
 from flask_batteries_included.helpers.apispec import generate_openapi_spec
 
+from dhos_fuego_api.app import create_app
 from dhos_fuego_api.blueprint_api import fuego_blueprint
 from dhos_fuego_api.blueprint_development import development_blueprint
 from dhos_fuego_api.models.api_spec import dhos_fuego_api_spec
+
+
+# Can't use the session app fixture because Flask doesn't like adding blueprints to an app that has handled requests.
+@pytest.fixture
+def app() -> Flask:
+    return create_app(testing=True)
 
 
 @pytest.mark.usefixtures("app")
