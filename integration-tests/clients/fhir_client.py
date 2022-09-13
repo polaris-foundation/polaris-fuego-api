@@ -9,7 +9,7 @@ env = Env()
 
 
 def _get_base_url() -> str:
-    return env.str("FHIR_SERVER_BASE_URL", "http://dhos-hapi-fhir-api:8080/fhir")
+    return env.str("FHIR_SERVER_BASE_URL", "http://polaris-hapi-fhir-api:8080/fhir")
 
 
 def _get_auth() -> HTTPBasicAuth:

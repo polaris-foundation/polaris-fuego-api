@@ -17,7 +17,7 @@ x-environment:
   LOG_LEVEL: DEBUG
   LOG_FORMAT: COLOUR
 
-  FHIR_SERVER_BASE_URL: http://dhos-hapi-fhir-api:8080/fhir
+  FHIR_SERVER_BASE_URL: http://polaris-hapi-fhir-api:8080/fhir
   FHIR_SERVER_TOKEN_URL: None
   FHIR_SERVER_CLIENT_ID: PolarisFoundation
   FHIR_SERVER_CLIENT_SECRET: UnbelievablyComplexPassword123qwerty
@@ -37,11 +37,11 @@ services:
         read:patient
     command: >-
       bash -c "wait-for-it dhos-fuego-api:5000 -t 60 --strict
-      && wait-for-it dhos-hapi-fhir-api:8080 -t 60 --strict
+      && wait-for-it polaris-hapi-fhir-api:8080 -t 60 --strict
       && behave --no-capture --no-logcapture ${BEHAVE_ARGS:-}"
     depends_on:
       - "dhos-fuego-api"
-      - "dhos-hapi-fhir-api"
+      - "polaris-hapi-fhir-api"
 
   dhos-fuego-api:
     container_name: "dhos-fuego-api"
@@ -53,12 +53,12 @@ services:
 
     command: >-
       bash -c "wait-for-it -t 60 postgres-db:5432 --strict
-      && wait-for-it dhos-hapi-fhir-api:8080 -t 60 --strict
+      && wait-for-it polaris-hapi-fhir-api:8080 -t 60 --strict
       && flask db upgrade
       && python -m dhos_fuego_api"
     depends_on:
       - "postgres-db"
-      - "dhos-hapi-fhir-api"
+      - "polaris-hapi-fhir-api"
     ports:
       - "5000:5000"
 
@@ -72,7 +72,7 @@ services:
       - POSTGRES_MULTIPLE_DATABASES="dhos-fuego-api-db","polaris-hapi-fhir-api-db"
 
   polaris-hapi-fhir-api:
-    image: ghcr.io/polaris-foundation/polaris-hapi-fhir-engine:latest
+    image: ghcr.io/polaris-foundation/polaris-hapi-fhir-api:latest
     container_name: "polaris-hapi-fhir-api"
     ports:
       - "80:8080"

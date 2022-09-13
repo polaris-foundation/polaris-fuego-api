@@ -9,4 +9,5 @@ python-dateutil==2.*
 python-jose==3.*
 reportportal-behave-client==1.*
 requests==2.*
+types-requests
 typing_extensions==3.*
