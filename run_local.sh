@@ -20,7 +20,7 @@ export LOG_FORMAT=colour
 export FHIR_SERVER_AUTH_METHOD=basic
 export FHIR_SERVER_BASE_URL=http://localhost:80/fhir
 export FHIR_SERVER_TOKEN_URL=None
-export FHIR_SERVER_CLIENT_ID=SensyneHealth
+export FHIR_SERVER_CLIENT_ID=PolarisFoundation
 export FHIR_SERVER_CLIENT_SECRET=UnbelievablyComplexPassword123qwerty
 export FHIR_SERVER_MRN_SYSTEM=https://commure.com/fhir/identifiers/Patient/MRN
 

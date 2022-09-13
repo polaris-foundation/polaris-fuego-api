@@ -1,14 +1,10 @@
 [tool.poetry]
 name = "dhos-fuego-api"
 version = "0.0.1"
-description = "DHOS Fuego API"
+description = "Polaris Fuego API"
 authors = ["Jon Daly <jonathan.daly@sensynehealth.com>"]
-keywords = ["FHIR", "HL7", "Fuego"]
-repository = "https://github.com/draysontechnologies/dhos-fuego-api"
-
-[[tool.poetry.source]]
-name = "sensynehealth"
-url = "https://pypi.fury.io/sensynehealth/"
+keywords = ["FHIR", "HL7", "Fuego", "Polaris"]
+repository = "https://github.com/polaris-foundation/polaris-fuego-api"
 
 [tool.poetry.dependencies]
 python = "^3.9"
